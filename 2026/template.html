@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Animation Demo</title>
+    <style>
+     @font-face {
+         font-family: 'Liquid Crystal';
+         src: url('LiquidCrystalDecayRegular-e9O4g.ttf') format('truetype');
+     }
+     body {
+         font-family: 'Liquid Crystal';
+         color: #ef243a;
+         margin: 0;
+         min-height: 100vh;
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         justify-content: center;
+         background: #fff2df;
+         -webkit-font-smoothing: none;
+         -moz-osx-font-smoothing: unsmoothed;
+         font-smooth: never;
+         text-rendering: optimizeSpeed;
+     }
+     h2 {
+         font-size: 42px;
+     }
+     canvas {
+         background: #fff2df ;
+         border: 0px #ef243a;
+         box-shadow: 0 0px 0px rgba(0,0,0,0.1);
+         image-rendering: pixelated;        /* Chrome, Firefox */
+         image-rendering: crisp-edges;      /* Firefox fallback */
+         -ms-interpolation-mode: nearest-neighbor;  /* IE */
+     }
+     .controls {
+         margin-top: 20px;
+     }
+     button {
+         padding: 8px 16px;
+         margin: 0 5px;
+         cursor: pointer;
+     }
+    </style>
+</head>
+<body>
+    <h2>Genuary 1: one color, one shape.</h2>
+    <canvas id="myCanvas"></canvas>
+    <!--div class="controls">
+        <button onclick="startAnimation()">Start</button>
+        <button onclick="stopAnimation()">Stop</button>
+        <button onclick="resetAnimation()">Reset</button>
+    </div -->
+
+    <script>
+     // Animation class definition
+     class CanvasAnimation {
+         constructor(canvasId, width = 320, height = 240, scale = 2) {
+             this.scale = scale;
+             this.canvas = document.getElementById(canvasId);
+             this.canvas.width = width;
+             this.canvas.height = height;
+             this.canvas.style.width = `${width*scale}px`;
+             this.canvas.style.height = `${height*scale}px`;
+             this.ctx = this.canvas.getContext('2d');
+             this.isRunning = false;
+             this.frameCount = 0;
+             this.lastTime = 0;
+             this.fps = 60;
+             this.updateCallbacks = [];
+             this.drawCallbacks = [];
+         }
+         onUpdate(callback) {
+             this.updateCallbacks.push(callback);
+             return this;
+         }
+         onDraw(callback) {
+             this.drawCallbacks.push(callback);
+             return this;
+         }
+         loop(currentTime) {
+             if (!this.isRunning) return;
+             const deltaTime = (currentTime - this.lastTime) / 1000;
+             this.lastTime = currentTime;
+             for (const callback of this.updateCallbacks) {
+                 callback(deltaTime, this.frameCount);
+             }
+             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+             for (const callback of this.drawCallbacks) {
+                 callback(this.ctx, this.frameCount);
+             }
+             this.frameCount++;
+             requestAnimationFrame(time => this.loop(time));
+         }
+         start() {
+             if (!this.isRunning) {
+                 this.isRunning = true;
+                 this.lastTime = performance.now();
+                 requestAnimationFrame(time => this.loop(time));
+             }
+             return this;
+         }
+         stop() {
+             this.isRunning = false;
+             return this;
+         }
+         reset() {
+             this.frameCount = 0;
+             return this;
+         }
+     }
+
+     // Demo animation setup
+     let width = 240;
+     let height = 160;
+     let animation;
+     const circles = Array.from({ length: 30 }, (_, i) => ({
+         x: Math.random() * width,
+         y: Math.random() * height,
+         radius: 10 + Math.random() * 20,
+         speedX: (Math.random() - 0.5) * 100,
+         speedY: (Math.random() - 0.5) * 100,
+         hue: i * 360 / 5
+     }));
+
+     function initAnimation() {
+         animation = new CanvasAnimation('myCanvas', width, height, 4)
+             .onUpdate((deltaTime, frame) => {
+                 // Update circle positions
+                 circles.forEach(circle => {
+                     circle.x += circle.speedX * deltaTime;
+                     circle.y += circle.speedY * deltaTime;
+
+                     // Bounce off walls
+                     if (circle.x < circle.radius || circle.x > width - circle.radius) {
+                         circle.speedX *= -1;
+                         circle.x = Math.max(circle.radius, Math.min(width - circle.radius, circle.x));
+                     }
+                     if (circle.y < circle.radius || circle.y > height - circle.radius) {
+                         circle.speedY *= -1;
+                         circle.y = Math.max(circle.radius, Math.min(height - circle.radius, circle.y));
+                     }
+                 });
+             })
+             .onDraw((ctx, frame) => {
+                 // Draw circles
+                 circles.forEach(circle => {
+                     ctx.beginPath();
+                     ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
+                     ctx.fillStyle = '#ef243a';
+                     ctx.fill();
+                 });
+             });
+     }
+
+     // Initialize animation on load
+     initAnimation();
+
+     // Start animation automatically
+     animation.start();
+    </script>
+</body>
+</html>
