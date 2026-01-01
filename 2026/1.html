@@ -7,7 +7,7 @@
     <style>
      @font-face {
          font-family: 'Liquid Crystal';
-         src: url('LiquidCrystalDecayRegular-e9O4g.ttf') format('truetype');
+         src: url('HomeVideoBold-R90Dv.ttf') format('truetype');
      }
      body {
          font-family: 'Liquid Crystal';
@@ -116,22 +116,51 @@
      let width = 240;
      let height = 160;
      let animation;
-     const circles = Array.from({ length: 30 }, (_, i) => ({
+     let circles = [{
          x: Math.random() * width,
          y: Math.random() * height,
-         radius: 10 + Math.random() * 20,
-         speedX: (Math.random() - 0.5) * 100,
-         speedY: (Math.random() - 0.5) * 100,
-         hue: i * 360 / 5
-     }));
+         radius: 5 + Math.random() * 5,
+         speedX: (Math.random()) * 4,
+         speedY: (Math.random()) * 6,
+         count: 0,
+     }];
 
      function initAnimation() {
+         let max_circles = 100;
+         let spawn_chance = 0.6;
+         let rot_chance = 0.3;
+         let die_chance = 0;
+
          animation = new CanvasAnimation('myCanvas', width, height, 4)
              .onUpdate((deltaTime, frame) => {
+                 if (circles.length < max_circles && Math.random() < spawn_chance) {
+                     let new_circle = Object.assign({}, circles[0]);
+                     new_circle.radius *= 0.8 + Math.random() * 0.4;
+                     new_circle.count = 0;
+                     circles.push(new_circle);
+                 }
+
+                 if (Math.random() < rot_chance) {
+                     circles.reverse();
+                 }
+
+                 circles = circles.filter(c => c.radius >= 1);
                  // Update circle positions
                  circles.forEach(circle => {
+                     circle.count += 1;
+                     if (circle.count > 500) {
+                         if (Math.random() < (circle.count - 500)/500) {
+                             circle.radius *= 0.95;
+                         }
+                     }
                      circle.x += circle.speedX * deltaTime;
                      circle.y += circle.speedY * deltaTime;
+
+                     circle.speedX += Math.random() * 2 - 1;
+                     circle.speedY += Math.random() * 2 - 1;
+
+                     let center_dist = Math.sqrt(Math.pow(circle.x - width/2, 2) +
+                                                 Math.pow(circle.y - height/2, 2))
 
                      // Bounce off walls
                      if (circle.x < circle.radius || circle.x > width - circle.radius) {
@@ -139,8 +168,8 @@
                          circle.x = Math.max(circle.radius, Math.min(width - circle.radius, circle.x));
                      }
                      if (circle.y < circle.radius || circle.y > height - circle.radius) {
-                         circle.speedY *= -1;
-                         circle.y = Math.max(circle.radius, Math.min(height - circle.radius, circle.y));
+                          circle.speedY *= -1;
+                          circle.y = Math.max(circle.radius, Math.min(height - circle.radius, circle.y));
                      }
                  });
              })
