@@ -46,17 +46,36 @@ function findNearestColor(r, g, b, palette) {
 
 // random!
 function randomKernel(size = 3, scale = 2) {
-    return Array.from({ length: size * size }, () => (Math.random() - 0.5) * scale);
+    const kernel = Array.from({ length: size * size }, () => (Math.random() - 0.5) * scale);
+    // Normalize so weights sum to 1 to preserve brightness
+    const sum = kernel.reduce((a, b) => a + b, 0);
+    return sum !== 0 ? kernel.map(v => v / sum) : kernel;
 }
 
+let lastEmbossAngle = Math.random() * Math.PI * 2;
+
 function randomEmbossKernel(size = 3) {
-    const half = (size * size) / 2;
-    const kernel = Array.from({ length: size * size }, (_, i) => {
-        if (i < half) return -Math.random();
-        if (i > half) return Math.random();
-        return 0;
-    });
-    return kernel;
+    const kernel = [];
+    // Random angle for emboss direction
+    const angle = Math.random() * 0.3 + lastEmbossAngle;
+    const centerX = (size - 1) / 2;
+    const centerY = (size - 1) / 2;
+
+    for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+            // Calculate position relative to center
+            const dx = x - centerX;
+            const dy = y - centerY;
+            // Project onto the random angle direction
+            const projection = dx * Math.cos(angle) + dy * Math.sin(angle);
+            kernel.push(projection * Math.random());
+        }
+    }
+
+    // Normalize so weights sum to 1 to preserve brightness
+    const sum = kernel.reduce((a, b) => a + b, 0);
+    lastEmbossAngle = angle;
+    return sum !== 0 ? kernel.map(v => v / sum) : kernel;
 }
 
 // generate random colors from within a palette

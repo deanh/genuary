@@ -20,7 +20,7 @@ window.testColor = (hex) => {
 
 let imageData;
 
-if (Math.random() < 0.7) {
+if (Math.random() < 0.8) {
     let sections = [];
     for (let row = 0; row < 6; row++) {
         for (let col = 0; col < 2; col++) {
@@ -49,7 +49,7 @@ if (Math.random() < 0.7) {
 let count = 0;
 
 animation.onDraw((ctx, frame) => {
-    if (Math.random() < 1 && count % 10 == 0) {
+    if (Math.random() < 1 && count % 20 == 0) {
         let filter;
         let last;
         if (Math.random() < 0.1) {
@@ -60,20 +60,24 @@ animation.onDraw((ctx, frame) => {
                 1 / 9, 1 / 9, 1 / 9
             ];
             //
-        } else {
+        } else if (Math.random() < 0.5) {
             // sharpen
             filter = [
                 0, -1, 0,
                 -1, 5, -1,
                 0, -1, 0
             ];
+        } else {
+            let embossSize = 2 * Math.floor(Math.random() *(count % 11)) + 5;
+            console.log(embossSize);
+            filter = randomEmbossKernel(embossSize);
         }
-        if (Math.random() < 0.7) {
+        if (Math.random() < 0.6) {
             imageData = convolve(imageData, filter, rgbPalette);
             ctx.putImageData(imageData, 0, 0);
         } else {
-
-            imageData = convolve(imageData, filter);
+            imageData = convolve(imageData, filter, rgbPalette);
+            ctx.putImageData(imageData, 0, 0);
         }
     }
     count++;
