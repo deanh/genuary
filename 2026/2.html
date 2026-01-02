@@ -11,23 +11,23 @@
      }
      :root {
          /* base palette */
-         --dark-blue: #2d6778;
-         --dark-tan: #ada98e;
-         --dark-red: #73464c;
-         --dark-pink: #ec96a2;
-         --mid-blue: #34acba;
-         --mid-tan: #f1ebb5;
-         --mid-red: #c44a5b;
-         --mid-pink: #f5bebc;
-         --light-blue: #acdbe0;
-         --light-tan: #fefad9;
-         --light-red: #ee6a7c;
-         --light-pink: #ffe7d6;
-         --color-primary: var(--dark-blue);
-         --color-secondary: var(--dark-pink);
-         --color-background: var(--light-tan);
-         --color-text: var(--dark-blue);
-         --color-accent: var(--mid-red);
+         --color-1: #221569;
+         --color-2: #3b2799;
+         --color-3: #4a2eca;
+         --color-4: #a83cf0;
+         --color-5: #db3cf0;
+         --color-6: #f465ee;
+         --color-7: #b5e6ff;
+         --color-8: #84d5fe;
+         --color-9: #4ec0e8;
+         --color-10: #4ea3dc;
+         --color-11: #3187d4;
+         --color-12: #314ad4;
+         --color-primary: var(--color-1);
+         --color-secondary: var(--color-4);
+         --color-background: var(--color-7);
+         --color-text: var(--color-1);
+         --color-accent: var(--color-5);
      }
      body {
          font-family: 'Liquid Crystal';
@@ -74,17 +74,6 @@
         <button onclick="resetAnimation()">Reset</button>
     </div -->
     <script src="canvas.js"></script>
-    <script>
-     // Demo animation setup
-     let width = 240;
-     let height = 160;
-     let animation = new CanvasAnimation('display');
-
-     const palette = getCanvasPalette();
-     // Initialize animation on load
-
-     // Start animation automatically
-     animation.start();
-    </script>
+    <script src="2.js"></script>
 </body>
 </html>

@@ -87,7 +87,7 @@
              for (const callback of this.updateCallbacks) {
                  callback(deltaTime, this.frameCount);
              }
-             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+             //this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
              for (const callback of this.drawCallbacks) {
                  callback(this.ctx, this.frameCount);
              }
